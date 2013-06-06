@@ -32,4 +32,10 @@ http://ajax.microsoft.com/ajax/jQuery/jquery-1.9.1.min.js
 http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.9.1.min.js
 http://code.jquery.com/jquery-2.0.1.min.js
 http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.2/jquery.min.js
+http://cdn.jsdelivr.net/jquery/2.0.2/jquery.min.js
+
+http://cdn.sencha.io/ext-4.2.0-gpl/ext-all.js
+http://cdn.jsdelivr.net/extjs/4.2.0/ext-all-rtl.js
+http://cdn.jsdelivr.net/extjs/4.2.0/ext-all-sandbox.js
+
 

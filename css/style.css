@@ -1,0 +1,31 @@
+#my-treemap {
+  float: left;
+  width: 800px;
+  height: 600px;
+  font-family: Arial;
+  font-size: 11px;
+}
+
+#data-box {
+  float: left;
+  width: 200px;
+  height: 100px;
+  border: 1px solid #999;
+  padding: 15px;
+  font-family: Arial;
+  color: #333;
+  font-size: 14px;
+}
+
+#data-json { float: right;}
+
+.health-green { background-color: green; color: blue; }
+.health-yellow { background-color: yellow; color: blue; }
+.health-red { background-color: red; color: blue; }
+
+.treemap-node:hover {
+ border-right: 2px solid cyan;
+ border-bottom: 2px solid cyan;
+ border-spacing: 0px;
+ border-padding: 0px;
+}
