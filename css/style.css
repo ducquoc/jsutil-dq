@@ -1,4 +1,4 @@
-#my-treemap {
+#treemap-box {
   float: left;
   width: 800px;
   height: 600px;
@@ -6,26 +6,19 @@
   font-size: 11px;
 }
 
-#data-box {
-  float: left;
-  width: 200px;
-  height: 100px;
-  border: 1px solid #999;
-  padding: 15px;
-  font-family: Arial;
-  color: #333;
-  font-size: 14px;
-}
+.health-unknown { background-color: #822980; /*#0095d5;*/ }
+.health-green { background-color: #008a2b; }
+.health-yellow { background-color: #dddd00; }
+.health-red { background-color: #de5231; }
 
-#data-json { float: right;}
-
-.health-green { background-color: green; color: blue; }
-.health-yellow { background-color: yellow; color: blue; }
-.health-red { background-color: red; color: blue; }
+.treemap-label { color: white; }
 
 .treemap-node:hover {
- border-right: 2px solid cyan;
- border-bottom: 2px solid cyan;
- border-spacing: 0px;
- border-padding: 0px;
+  border-right: 1px solid cyan;
+  border-bottom: 1px solid cyan;
+  border-spacing: 0px;
+  border-padding: 0px;
 }
+
+#data-json { float: right; }
+

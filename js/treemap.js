@@ -1,4 +1,4 @@
-/** See treemap algorithms (squarified/strip) at : http://www.cs.umd.edu/hcil/treemap-history/ 
+/** simple plugin to draw treemap (using 'squarified' algorithm for layout) 
 jQuery.fn.treeMap = function(params) { [] };
 */
 (function($) {
@@ -21,7 +21,7 @@ jQuery.fn.treeMap = function(params) { [] };
 
         this.nodeClass = function() {
             return '';
-        }
+        };
         this.click = function() {
         };
         this.mouseenter = function() {
@@ -30,7 +30,7 @@ jQuery.fn.treeMap = function(params) { [] };
         };
         this.mousemove = function() {
         };
-		this.mouseover = function() {
+        this.mouseover = function() {
         };
         this.paintCallback = function() {
         };
@@ -40,14 +40,20 @@ jQuery.fn.treeMap = function(params) { [] };
         $.extend(this, options);
 
         this.setNodeColors = function($box) {
-            if (this.backgroundColor) $box.css('background-color', this.backgroundColor($box));
-            if (this.color) $box.css('color', this.color($box));
-        }
+            if (this.backgroundColor) { $box.css('background-color', this.backgroundColor($box)); }
+            if (this.color) { $box.css('color', this.color($box)); }
+        };
     }
 
-    TreeMap.SIDE_MARGIN = 20;
-    TreeMap.TOP_MARGIN = 20;
-    TreeMap.NODE_MARGIN = 4;
+    TreeMap.NODE_MARGIN = 2; //4;
+    TreeMap.SIDE_MARGIN = 15; //20;
+    TreeMap.TOP_MARGIN = 15; //20;
+
+    TreeMap.HORIZONTAL = 1; // landscape (wideScreen)
+    TreeMap.VERTICAL = 2; // portrait
+
+    TreeMap.NO_DATA_BG_COLOR = "#eeeeee"; // "#0095d5";
+    TreeMap.NO_DATA_TEXT = "No valid data";
 
     function Rectangle(x, y, width, height) {
         this.x = x;
@@ -55,7 +61,7 @@ jQuery.fn.treeMap = function(params) { [] };
         this.width = width;
         this.height = height;
         this.margin = TreeMap.NODE_MARGIN;
-    }
+    };
 
     Rectangle.prototype.style = function() {
         return {
@@ -64,14 +70,20 @@ jQuery.fn.treeMap = function(params) { [] };
             width: (this.width - this.margin) + "px",
             height: (this.height - this.margin) + "px"
         };
-    }
+    };
 
     Rectangle.prototype.isWide = function() {
         return this.width > this.height;
-    }
+    };
 
     TreeMap.prototype.paint = function(nodeList) {
-        var nodeList = this.squarify(nodeList, this.rectangle);
+        nodeList = this.filterInvalidSizeItems(nodeList);
+        if (!nodeList || nodeList.length === 0) {
+            this.$div.css("background-color", TreeMap.NO_DATA_BG_COLOR);
+            this.$div.text(TreeMap.NO_DATA_TEXT);
+        }
+
+        nodeList = this.squarify(nodeList, this.rectangle);
 
         for (var i = 0; i < nodeList.length; i++) {
             var node = nodeList[i];
@@ -122,28 +134,23 @@ jQuery.fn.treeMap = function(params) { [] };
 
         }
         this.ready();
-    }
+    };
 
-    TreeMap.prototype.fitLabelFontSize = function($content, node) {
-        var nodeBounds = node.bounds ;
-        while ($content.height() + TreeMap.TOP_MARGIN > nodeBounds.height || $content.width() + TreeMap.SIDE_MARGIN > nodeBounds.width) {
-            var fontSize = parseFloat($content.css('font-size')) - 3;
-            if (fontSize < 15) {
-                $content.remove();
-                break;
+    TreeMap.prototype.filterInvalidSizeItems = function(nodeList) {
+        var result = []; // JavaScript 1.6+ has Array.prototype.filter()
+        for (var i = 0; i < nodeList.length; i++) {
+            if (!nodeList[i].size || nodeList[i].size <= 0) {
+                // alert("invalid size: " + nodeList[i].size);
+                continue;
             }
-            $content.css('font-size', fontSize + 'px');
+            result.push(nodeList[i]);
         }
-        $content.css('display', 'block');
-        this.paintCallback($content, node);
-    }
-
-    TreeMap.HORIZONTAL = 1;
-    TreeMap.VERTICAL = 2;
+        return result;
+    };
 
     TreeMap.prototype.squarify = function(nodeList, rectangle) {
         nodeList.sort(function(a, b) {
-            return b.value - a.value;
+            return b.size - a.size;
         });
         this.divideDisplayArea(nodeList, rectangle);
 
@@ -152,9 +159,11 @@ jQuery.fn.treeMap = function(params) { [] };
 
     TreeMap.prototype.divideDisplayArea = function(nodeList, destRectangle) {
         // Check for boundary conditions
-        if (nodeList.length === 0) return;
+        if (nodeList.length === 0) { 
+            return;
+        }
 
-        if (nodeList.length == 1) {
+        if (nodeList.length === 1) {
             nodeList[0].bounds = destRectangle;
             return;
         }
@@ -182,7 +191,7 @@ jQuery.fn.treeMap = function(params) { [] };
             }
         }
 
-        if (orientation == TreeMap.HORIZONTAL) {
+        if (orientation === TreeMap.HORIZONTAL) {
             this.divideDisplayArea(halves.left, new Rectangle(destRectangle.x, destRectangle.y, midPoint, destRectangle.height));
             this.divideDisplayArea(halves.right, new Rectangle(destRectangle.x + midPoint, destRectangle.y, destRectangle.width - midPoint, destRectangle.height));
         } else {
@@ -197,9 +206,10 @@ jQuery.fn.treeMap = function(params) { [] };
         var length = nodeList.length;
 
         for (var midPoint = 0; midPoint < length; midPoint++) {
-            if (midPoint > 0 && ( accValue + nodeList[midPoint].value > halfValue ))
+            if (midPoint > 0 && ( accValue + nodeList[midPoint].size > halfValue )) {
                 break;
-            accValue += nodeList[midPoint].value;
+            }
+            accValue += nodeList[midPoint].size;
         }
 
         return {
@@ -211,9 +221,24 @@ jQuery.fn.treeMap = function(params) { [] };
     TreeMap.prototype.sumValues = function(nodeList) {
         var result = 0;
         var length = nodeList.length;
-        for (var i = 0; i < length; i++)
-            result += nodeList[i].value;
+        for (var i = 0; i < length; i++) {
+            result += nodeList[i].size;
+        }
         return result;
-    };    
+    };
+
+    TreeMap.prototype.fitLabelFontSize = function($content, node) {
+        var nodeBounds = node.bounds ;
+        while ($content.height() + TreeMap.TOP_MARGIN > nodeBounds.height || $content.width() + TreeMap.SIDE_MARGIN > nodeBounds.width) {
+            var fontSize = parseFloat($content.css('font-size')) - 2;
+            if (fontSize < 12) {
+                $content.remove();
+                break;
+            }
+            $content.css('font-size', fontSize + 'px');
+        }
+        $content.css('display', 'block');
+        this.paintCallback($content, node);
+    };
 
 })(jQuery);

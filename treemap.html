@@ -7,49 +7,64 @@
 
 <!--<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3/jquery.min.js"></script>-->
 <script type="text/javascript" src="js/jquery.min.js"></script>
-<script type="text/javascript">
-if (!window.location.origin) window.location.origin = window.location.protocol+"//"+window.location.host;
-var baseUrl = window.location.origin;
-var uri = location.href; // alert ("Browsing web page of " + baseUrl);
-var baseUri = uri.substring(0, uri.indexOf('/', window.location.protocol.length)) + "//";
-</script>
 <script type="text/javascript" src="js/treemap.js"></script>
 
 </head>
 
 <body>
-  <div id='my-treemap'></div>
-  <div id='data-box'></div>
+  <div id='treemap-box'></div>
   <div id='data-json'></div>
 
   <script>
     var jsonData = [
-       { label : 'Proj1', value : 40, data : 'Proj1 data' },
-       { label : 'Proj2', value : 80, data : 'Proj2 data' },
-       { label : 'Proj3', value : 70, data : 'Proj3 data' },
-       { label : 'Proj4', value : 60, data : 'Proj4 data' },
-       { label : 'Proj5', value : 100, data : 'Proj5 data' },
-       { label : 'Proj6', value : 50, data : 'Proj6 data' },
-       { label : 'Proj7', value : 140, data : 'Proj7 data' },
-       { label : 'Proj8', value : 75, data : 'Proj8 data' }
+       { label : 'Proj1', size : 40, density: "Red", id : 'Proj1_id' },
+       { label : 'Proj2', size : 80, density: "Yellow", id : 'Proj2_id' },
+       { label : 'Proj3', size : 70, density: "Yellow", id : 'Proj3_id' },
+       { label : 'Proj4', size : 60, density: "Green", id : 'Proj4_id' },
+       { label : 'Proj5', size : 100, density: "Green", id : 'Proj5_id' },
+       { label : 'Proj6', size : 50, density: "Yellow", id : 'Proj6_id' },
+       { label : 'Proj7', size : 140, density: "Green", id : 'Proj7_id' },
+       { label : 'Proj8', size : 75, density: "Yellow", id : 'Proj8_id' }
     ];
+    var emptyJsonData = [];
+    var bigJsonData= [{size: 7884000, density:"Green", label: "xITFM Aggregate Current Portfolio Demand (R2)", id:"132060"},
+                      { size: 6064000, density: "Red", label: "xITFM Aggregate Current Portfolio Demand", id:"132061" },
+                      { size: 4989484, density: "Green", label: "xITFM Aggregate Current Portfolio Demand (R6)", id:"132062" },
+                      { size: 2650000.0, density: "Green", label: "ERP Marketing", id:"132063" },
+                      { size: 2574020.0, density: "Yellow", label: "Marketing WebPortal V2", id:"132064" },
+                      { size: 2016000.0, density: "Green", label: "Update Credit Scoring Application", id:"132065" },
+                      { size: 1864000.0, density: "Green", label: "ERP Supply Chain", id:"132066" },
+                      { size: 1800000, density: "Green", label: "Vendor Management", id:"132067" },
+                      { size: 1694140.0, density: "Yellow", label: "Global Control Phase 1", id:"132068" },
+                      { size: 1654000.0, density: "Green", label: "VOIP APP Integration", id:"132069" },
+                      { size: 1398000.0, density: "Green", label: "ERP Sales", id:"132071" },
+                      { size: 1255000.0, density: "Green", label: "ERP Accounting", id:"132072" },
+                      { size: 1000000, density: "Green", label: "Partner Management System", id:"132073" },
+                      { size: 680860.0, density: "Green", label: "Location intelligence", id:"132074" },
+                      { size: 510000.0, density: "null", label: "xKJK Test 16", id:"132075" },
+                      { size: 463747.0, density: "Green", label: "APO - Pilot", id:"132076" }
+                      ];
+    var randomNumber = Math.floor(Math.random()*(12-3) + 3); // from 3 to 12
+    if (randomNumber < 4) { jsonData = emptyJsonData; }
+    if (randomNumber > 10) { jsonData = bigJsonData; }
 
-    $('div#my-treemap').treeMap(jsonData, {
+    $('div#treemap-box').treeMap(jsonData, {
       nodeClass : function(node, box) {
-        if (node.value <= 60) return 'health-red';
-        if (node.value > 90) return 'health-green';
-        return 'health-yellow';
+          if (node.density.toLowerCase() === "red") return 'health-red';
+          if (node.density.toLowerCase() === "green") return 'health-green';
+          if (node.density.toLowerCase() === "yellow") return 'health-yellow';
+          return 'health-unknown';
       },
       mouseenter : function(node, box) {
-        $('#data-box').html('<p>Label: '
-          + node.label + '</p><p>Data: '
-          + node.data + '</p><p>Value: '
-          + node.value + '</p>');
+          if (!!node.id && node.id.indexOf(" ") < 0) {
+              jQuery('div#' + node.id).attr('title', node.label + ' (' + node.size + ')');
+          } else {
+              jQuery(this.$div).attr('title', node.label + ' (' + node.size + ')');
+          }
       }
     });
 
-    $('div#data-json').html('<hr><i>'+JSON.stringify(jsonData)+"</i>");
-    // TODO : let users update JSON on UI
+    $('div#data-json').text("DATA: " + JSON.stringify(jsonData)).css("color", "gray");
   </script>
 </body>
 </html>
