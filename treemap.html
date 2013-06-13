@@ -17,14 +17,14 @@
 
   <script>
     var jsonData = [
-       { label : 'Proj1', size : 40, density: "Red", id : 'Proj1_id' },
+       { label : 'Proj1', size : 40, density: "Red", id : 'Proj1_id', link : "http://thanhnien.vn" },
        { label : 'Proj2', size : 80, density: "Yellow", id : 'Proj2_id' },
        { label : 'Proj3', size : 70, density: "Yellow", id : 'Proj3_id' },
-       { label : 'Proj4', size : 60, density: "Green", id : 'Proj4_id' },
+       { label : 'Proj4', size : 60, density: "Green", id : 'Proj4_id', link : "http://tuoitre.vn" },
        { label : 'Proj5', size : 100, density: "Green", id : 'Proj5_id' },
        { label : 'Proj6', size : 50, density: "Yellow", id : 'Proj6_id' },
        { label : 'Proj7', size : 140, density: "Green", id : 'Proj7_id' },
-       { label : 'Proj8', size : 75, density: "Yellow", id : 'Proj8_id' }
+       { label : 'Proj8', size : 75, density: "Yellow", id : 'Proj8_id', link : "www.google.com" }
     ];
     var emptyJsonData = [];
     var bigJsonData= [{size: 7884000, density:"Green", label: "xITFM Aggregate Current Portfolio Demand (R2)", id:"132060"},
@@ -60,6 +60,10 @@
               jQuery('div#' + node.id).attr('title', node.label + ' (' + node.size + ')');
           } else {
               jQuery(this.$div).attr('title', node.label + ' (' + node.size + ')');
+          }
+          if (!!node.link) {
+              var url = (node.link.indexOf("www.") === 0) ? "http://" + node.link : node.link;
+              jQuery('div#' + node.id).wrap('<a href="' + url + '" target="_blank" />');
           }
       }
     });
